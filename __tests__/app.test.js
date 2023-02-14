@@ -19,7 +19,7 @@ describe("GET: 200 - /api", () => {
   });
 });
 
-describe("GET: 200 - /api/restaurants", () => {
+describe.only("GET: 200 - /api/restaurants", () => {
   it("should respond with an object that has a key restaurants", () => {
     return request(app)
       .get("/api/restaurants")
@@ -47,8 +47,22 @@ describe("GET: 200 - /api/restaurants", () => {
             area_id: expect.any(Number),
             cuisine: expect.any(String),
             website: expect.any(String),
+            average_rating: expect.any(Number)
           });
         });
+      });
+  });
+  it("should respond with an object containing restaurants with correct average ratings", () => {
+    return request(app)
+      .get("/api/restaurants")
+      .expect(200)
+      .then((response) => {
+        const restaurants = response.body.restaurants;
+
+        // restaurant_id === 1
+        expect(restaurants[5].average_rating).toBe(3);
+        // restaurant_id === 4
+        expect(restaurants[1].average_rating).toBe(4);
       });
   });
 });

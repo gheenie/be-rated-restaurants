@@ -1,8 +1,19 @@
 const db = require("../db/connection");
 
 function fetchRestaurants() {
-  return db.query("SELECT * FROM restaurants;").then((response) => {
-    return response.rows;
+  return db.query(
+    `SELECT restaurants.*, AVG(rating) as average_rating
+    FROM restaurants
+    JOIN ratings
+    USING (restaurant_id)
+    GROUP BY restaurant_id;`
+  )
+  .then((response) => {
+    return response.rows.map(restaurant => {
+      restaurant.average_rating = Number(restaurant.average_rating);
+      
+      return restaurant;
+    });
   });
 }
 
