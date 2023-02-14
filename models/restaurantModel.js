@@ -18,4 +18,13 @@ function addRestaurant(newRestaurant) {
   .then(results => results.rows[0]);
 }
 
-module.exports = { fetchRestaurants, addRestaurant };
+function removeRestaurant(restaurantId) {
+  return db.query(
+    `DELETE FROM restaurants
+    WHERE restaurant_id = $1
+    RETURNING *;`,
+    [restaurantId]
+  );
+}
+
+module.exports = { fetchRestaurants, addRestaurant, removeRestaurant };

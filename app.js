@@ -1,5 +1,5 @@
 const express = require("express");
-const { getRestaurants, createRestaurant } = require("./controllers/restaurantController");
+const { getRestaurants, createRestaurant, deleteRestaurant } = require("./controllers/restaurantController");
 
 const app = express();
 
@@ -12,5 +12,7 @@ app.get("/api", (request, response) => {
 app.get("/api/restaurants", getRestaurants);
 
 app.post("/api/restaurants", createRestaurant);
+
+app.delete("/api/restaurants/:restaurantId", deleteRestaurant);
 
 module.exports = app;

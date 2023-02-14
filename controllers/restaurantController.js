@@ -1,4 +1,4 @@
-const { fetchRestaurants, addRestaurant } = require("../models/restaurantModel");
+const { fetchRestaurants, addRestaurant, removeRestaurant } = require("../models/restaurantModel");
 
 function getRestaurants(request, response) {
   fetchRestaurants().then((restaurants) => {
@@ -15,4 +15,14 @@ function createRestaurant(request, response) {
   });
 }
 
-module.exports = { getRestaurants, createRestaurant };
+function deleteRestaurant(request, response) {
+  const { restaurantId } = request.params;
+  
+  removeRestaurant(restaurantId)
+  .then((result) => {
+    //console.log(result.rows);
+    response.status(204).send();
+  });
+}
+
+module.exports = { getRestaurants, createRestaurant, deleteRestaurant };

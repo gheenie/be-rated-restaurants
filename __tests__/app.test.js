@@ -74,3 +74,27 @@ describe("POST: 201 - /api/restaurants", () => {
     });
   });
 });
+
+describe("DELETE: 204 - /api/restaurants/:restaurant_id", () => {
+  it("should respond with 204", () => {
+    const restaurant_id = 1;
+
+    return request(app)
+    .delete("/api/restaurants/" + restaurant_id)
+    .expect(204);
+  });
+
+  it("should remove the correct restaurant from the db", () => {
+    const restaurant_id = 2;
+
+    return request(app)
+    .delete("/api/restaurants/" + restaurant_id)
+    .expect(204)
+    .then(() => {
+      return connection.query('SELECT * FROM restaurants WHERE restaurant_id = 2;');
+    })
+    .then(result => {
+      expect(result.rows).toHaveLength(0);
+    });
+  });
+});
