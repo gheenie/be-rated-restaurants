@@ -9,17 +9,11 @@ const {
 } = require("../models/restaurantModel");
 
 function getRestaurants(request, response) {
-  const { search } = request.query;
+  const { search } = request.query ?? "";
 
-  if (search === undefined) {
-    fetchRestaurants().then((restaurants) => {
-      response.status(200).send({ restaurants });
-    });
-  } else {
-    fetchRestaurantsWithQueries(search).then((restaurants) => {
-      response.status(200).send({ restaurants });
-    });
-  }
+  fetchRestaurantsWithQueries(search).then((restaurants) => {
+    response.status(200).send({ restaurants });
+  });
 }
 
 function createRestaurant(request, response) {

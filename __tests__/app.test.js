@@ -41,13 +41,14 @@ describe("GET: 200 - /api/restaurants", () => {
       .get("/api/restaurants")
       .expect(200)
       .then((response) => {
+        expect(response.body.restaurants).toHaveLength(8);
         response.body.restaurants.forEach((restaurant) => {
           expect(restaurant).toMatchObject({
             restaurant_name: expect.any(String),
             area_id: expect.any(Number),
             cuisine: expect.any(String),
             website: expect.any(String),
-            average_rating: expect.any(Number)
+            average_rating: expect.any(Number),
           });
         });
       });
@@ -220,22 +221,22 @@ describe("GET: 200 - /api/areas/:area_id/restaurants", () => {
   });
 });
 
-describe.only("GET: 200 - /api/restaurants?search", () => {
+describe("GET: 200 - /api/restaurants?search", () => {
   it("should respond with only restaurants that match the search term", () => {
     return request(app)
-    .get("/api/restaurants?search=Pieminister")
-    .expect(200)
-    .then((response) => {
-      const restaurants = response.body.restaurants;
+      .get("/api/restaurants?search=Pieminister")
+      .expect(200)
+      .then((response) => {
+        const restaurants = response.body.restaurants;
 
-      expect(restaurants).toHaveLength(1);
-      expect(restaurants[0]).toMatchObject({
-        restaurant_name: 'Pieminister',
-        area_id: 1,
-        cuisine: 'Pies And More Pies',
-        website: '',
-        average_rating: 1
+        expect(restaurants).toHaveLength(1);
+        expect(restaurants[0]).toMatchObject({
+          restaurant_name: "Pieminister",
+          area_id: 1,
+          cuisine: "Pies And More Pies",
+          website: "",
+          average_rating: 1,
+        });
       });
-    });
   });
 });
