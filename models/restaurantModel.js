@@ -1,23 +1,6 @@
 const db = require("../db/connection");
 const format = require("pg-format");
 
-function fetchRestaurants() {
-  return db.query(
-    `SELECT restaurants.*, AVG(rating) as average_rating
-    FROM restaurants
-    JOIN ratings
-    USING (restaurant_id)
-    GROUP BY restaurant_id;`
-  )
-  .then((response) => {
-    const restaurants = response.rows;
-
-    restaurants.forEach(restaurant => restaurant.average_rating = Number(restaurant.average_rating));
-
-    return restaurants;
-  });
-}
-
 function addRestaurant(newRestaurant) {
   const { restaurant_name, area_id, cuisine, website } = newRestaurant;
 
@@ -81,22 +64,23 @@ function fetchRestaurantsWithQueries(search) {
     search
   );
 
-  return db.query(queryStr)
-  .then((response) => {
+  return db.query(queryStr).then((response) => {
     const restaurants = response.rows;
 
-    restaurants.forEach(restaurant => restaurant.average_rating = Number(restaurant.average_rating));
+    restaurants.forEach(
+      (restaurant) =>
+        (restaurant.average_rating = Number(restaurant.average_rating))
+    );
 
     return restaurants;
   });
 }
 
 module.exports = {
-  fetchRestaurants,
   addRestaurant,
   removeRestaurant,
   patchRestaurant,
   fetchAreaByAreaId,
   fetchRestaurantsByAreaId,
-  fetchRestaurantsWithQueries
+  fetchRestaurantsWithQueries,
 };

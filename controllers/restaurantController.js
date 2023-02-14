@@ -1,5 +1,4 @@
 const {
-  fetchRestaurants,
   addRestaurant,
   removeRestaurant,
   patchRestaurant,
