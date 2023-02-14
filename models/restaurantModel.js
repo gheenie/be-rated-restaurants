@@ -10,11 +10,11 @@ function fetchRestaurants() {
     GROUP BY restaurant_id;`
   )
   .then((response) => {
-    return response.rows.map(restaurant => {
-      restaurant.average_rating = Number(restaurant.average_rating);
-      
-      return restaurant;
-    });
+    const restaurants = response.rows;
+
+    restaurants.forEach(restaurant => restaurant.average_rating = Number(restaurant.average_rating));
+
+    return restaurants;
   });
 }
 
@@ -83,12 +83,11 @@ function fetchRestaurantsWithQueries(search) {
 
   return db.query(queryStr)
   .then((response) => {
-    console.log(response.rows);
-    return response.rows.map(restaurant => {
-      restaurant.average_rating = Number(restaurant.average_rating);
-      
-      return restaurant;
-    });
+    const restaurants = response.rows;
+
+    restaurants.forEach(restaurant => restaurant.average_rating = Number(restaurant.average_rating));
+
+    return restaurants;
   });
 }
 
