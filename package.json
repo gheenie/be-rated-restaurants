@@ -4,7 +4,7 @@
   "description": "## A micro [yelp](https://www.yelp.co.uk/c/manchester/restaurants) clone API using Express and SQL",
   "main": "index.js",
   "scripts": {
-    "test": "PGDATABASE=rated_restaurants node ./db/run-seed.js && PGDATABASE=rated_restaurants jest",
+    "test": "PGDATABASE=rated_restaurants jest",
     "setup-db": "psql -f ./db/setup-db.sql",
     "run-seed": "PGDATABASE=rated_restaurants node ./db/run-seed.js"
   },

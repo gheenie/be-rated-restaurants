@@ -1,4 +1,4 @@
-const { fetchRestaurants } = require("../models/restaurantModel");
+const { fetchRestaurants, addRestaurant } = require("../models/restaurantModel");
 
 function getRestaurants(request, response) {
   fetchRestaurants().then((restaurants) => {
@@ -6,4 +6,13 @@ function getRestaurants(request, response) {
   });
 }
 
-module.exports = { getRestaurants };
+function createRestaurant(request, response) {
+  const newRestaurant = request.body;
+  
+  addRestaurant(newRestaurant)
+  .then(restaurant => {
+    response.status(201).send({ restaurant });
+  });
+}
+
+module.exports = { getRestaurants, createRestaurant };

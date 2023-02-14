@@ -1,5 +1,12 @@
 const request = require("supertest");
 const app = require("../app.js");
+const connection = require('../db/connection');
+const seedData = require('../db/data/index');
+const { seed } = require('../db/seed');
+
+beforeAll(() => seed(seedData));
+
+afterAll(() => connection.end());
 
 describe("GET: 200 - /api", () => {
   it("should return an object with a status code of 200", () => {
@@ -43,5 +50,27 @@ describe("GET: 200 - /api/restaurants", () => {
           });
         });
       });
+  });
+});
+
+describe("POST: 201 - /api/restaurants", () => {
+  it("should respond with the newly created restaurant object", () => {
+    const newRestaurant = {
+      "restaurant_name": "McDonald's",
+      "area_id": 2,
+      "cuisine": "American",
+      "website": "www.mcdonalds.com"
+    };
+
+    return request(app)
+    .post("/api/restaurants")
+    .send(newRestaurant)
+    .expect(201)
+    .then((response) => {
+      expect(response.body.restaurant).toEqual({ 
+        restaurant_id: 9,
+        ...newRestaurant
+      });
+    });
   });
 });

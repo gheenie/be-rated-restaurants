@@ -6,4 +6,16 @@ function fetchRestaurants() {
   });
 }
 
-module.exports = { fetchRestaurants };
+function addRestaurant(newRestaurant) {
+  const { restaurant_name, area_id, cuisine, website } = newRestaurant;
+
+  return db.query(
+    `INSERT INTO restaurants (restaurant_name, area_id, cuisine, website) 
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;`,
+    [restaurant_name, area_id, cuisine, website]
+  )
+  .then(results => results.rows[0]);
+}
+
+module.exports = { fetchRestaurants, addRestaurant };
