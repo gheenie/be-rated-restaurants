@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const format = require("pg-format");
 
 function fetchRestaurants() {
   return db.query(
@@ -69,6 +70,28 @@ function fetchRestaurantsByAreaId(areaId) {
     });
 }
 
+function fetchRestaurantsWithQueries(search) {
+  const queryStr = format(
+    `SELECT restaurants.*, AVG(rating) as average_rating
+    FROM restaurants
+    JOIN ratings
+    USING (restaurant_id)
+    WHERE restaurant_name LIKE '%%%s%%'
+    GROUP BY restaurant_id;`,
+    search
+  );
+
+  return db.query(queryStr)
+  .then((response) => {
+    console.log(response.rows);
+    return response.rows.map(restaurant => {
+      restaurant.average_rating = Number(restaurant.average_rating);
+      
+      return restaurant;
+    });
+  });
+}
+
 module.exports = {
   fetchRestaurants,
   addRestaurant,
@@ -76,4 +99,5 @@ module.exports = {
   patchRestaurant,
   fetchAreaByAreaId,
   fetchRestaurantsByAreaId,
+  fetchRestaurantsWithQueries
 };

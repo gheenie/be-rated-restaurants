@@ -19,7 +19,7 @@ describe("GET: 200 - /api", () => {
   });
 });
 
-describe.only("GET: 200 - /api/restaurants", () => {
+describe("GET: 200 - /api/restaurants", () => {
   it("should respond with an object that has a key restaurants", () => {
     return request(app)
       .get("/api/restaurants")
@@ -217,5 +217,25 @@ describe("GET: 200 - /api/areas/:area_id/restaurants", () => {
           area_id: 1,
         });
       });
+  });
+});
+
+describe.only("GET: 200 - /api/restaurants?search", () => {
+  it("should respond with only restaurants that match the search term", () => {
+    return request(app)
+    .get("/api/restaurants?search=Pieminister")
+    .expect(200)
+    .then((response) => {
+      const restaurants = response.body.restaurants;
+
+      expect(restaurants).toHaveLength(1);
+      expect(restaurants[0]).toMatchObject({
+        restaurant_name: 'Pieminister',
+        area_id: 1,
+        cuisine: 'Pies And More Pies',
+        website: '',
+        average_rating: 1
+      });
+    });
   });
 });

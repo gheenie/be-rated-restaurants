@@ -5,12 +5,21 @@ const {
   patchRestaurant,
   fetchAreaByAreaId,
   fetchRestaurantsByAreaId,
+  fetchRestaurantsWithQueries,
 } = require("../models/restaurantModel");
 
 function getRestaurants(request, response) {
-  fetchRestaurants().then((restaurants) => {
-    response.status(200).send({ restaurants });
-  });
+  const { search } = request.query;
+
+  if (search === undefined) {
+    fetchRestaurants().then((restaurants) => {
+      response.status(200).send({ restaurants });
+    });
+  } else {
+    fetchRestaurantsWithQueries(search).then((restaurants) => {
+      response.status(200).send({ restaurants });
+    });
+  }
 }
 
 function createRestaurant(request, response) {
