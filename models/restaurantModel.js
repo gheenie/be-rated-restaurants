@@ -31,7 +31,7 @@ function patchRestaurant(restaurantId, updateObj) {
   queryString =
     queryString.substring(0, queryString.length - 1) +
     format(" WHERE restaurant_id = %L RETURNING *;", restaurantId);
-  console.log(queryString);
+  
   return db.query(queryString).then((result) => {
     return result.rows[0];
   });
@@ -53,15 +53,17 @@ function fetchRestaurantsByAreaId(areaId) {
     });
 }
 
-function fetchRestaurantsWithQueries(search) {
+function fetchRestaurantsWithQueries(search, sort_by) {
   const queryStr = format(
     `SELECT restaurants.*, AVG(rating) as average_rating
     FROM restaurants
     JOIN ratings
     USING (restaurant_id)
     WHERE restaurant_name LIKE '%%%s%%'
-    GROUP BY restaurant_id;`,
-    search
+    GROUP BY restaurant_id
+    ORDER BY %s DESC;`,
+    search,
+    sort_by
   );
 
   return db.query(queryStr).then((response) => {
