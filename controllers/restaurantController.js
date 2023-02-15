@@ -8,9 +8,13 @@ const {
 } = require("../models/restaurantModel");
 
 function getRestaurants(request, response, next) {
-  const { search } = request.query ?? "";
+  let { search } = request.query;
+  let { sort_by } = request.query;
 
-  fetchRestaurantsWithQueries(search)
+  if (search === undefined) search = '';
+  if (sort_by === undefined) sort_by = 'restaurant_name';
+
+  fetchRestaurantsWithQueries(search, sort_by)
     .then((restaurants) => {
       response.status(200).send({ restaurants });
     })
