@@ -39,7 +39,7 @@ function deleteRestaurant(request, response, next) {
   const { restaurantId } = request.params;
 
   removeRestaurant(restaurantId)
-    .then((result) => {
+    .then(() => {
       response.status(204).send();
     })
     .catch((err) => {
@@ -49,16 +49,17 @@ function deleteRestaurant(request, response, next) {
 
 function updateRestaurant(request, response, next) {
   const { restaurantId } = request.params;
-  const keys = ["area_id", "restaurant_name", "cuisine", "website"];
+  const whatToUpdate = request.body;
+
+  const validColumns = ["area_id", "restaurant_name", "cuisine", "website"];
   const updateObj = {};
-  keys.forEach((key) => {
-    if (request.body.hasOwnProperty(key)) {
-      updateObj[key] = request.body[key];
-    }
-  });
+  for ( const [column, value] of Object.entries(whatToUpdate) ) {
+    if ( validColumns.includes(column) ) updateObj[column] = value;
+  }
 
   if (Object.keys(updateObj).length === 0) {
     response.status(400).send();
+    
     return;
   }
 
@@ -78,7 +79,7 @@ function getRestaurantsByAreaId(request, response, next) {
   fetchAreaByAreaId(areaId)
     .then((area) => {
       returnObject = { area: { ...area } };
-      
+
       return fetchRestaurantsByAreaId(areaId);
     })
     .then((restaurants) => {
