@@ -20,7 +20,7 @@ describe("GET: /api", () => {
 });
 
 describe("GET: /api/restaurants", () => {
-  it("200; correct highest level property and value is typeof Array", () => {
+  it("200; correct highest level property and it's value's data type", () => {
     return request(app)
       .get("/api/restaurants")
       .expect(200)
@@ -108,8 +108,8 @@ describe("DELETE: /api/restaurants/:restaurant_id", () => {
       .then(() => {
         return connection.query("SELECT * FROM restaurants WHERE restaurant_id = 2;");
       })
-      .then((response) => {
-        expect(response.rows).toHaveLength(0);
+      .then((result) => {
+        expect(result.rows).toHaveLength(0);
       });
   });
 });
@@ -172,65 +172,63 @@ describe("PATCH: /api/restaurants/:restaurant_id", () => {
   });
 });
 
-describe("GET: 200 - /api/areas/:area_id/restaurants", () => {
-  it("should return an object with a key of area with an object as value", () => {
+describe("GET: /api/areas/:area_id/restaurants", () => {
+  it("200; correct highest level value's data type", () => {
     const areaId = 1;
     return request(app)
       .get(`/api/areas/${areaId}/restaurants`)
       .expect(200)
-      .then((result) => {
-        const obj = result.body.area;
-        expect(typeof obj).toBe("object");
+      .then((response) => {
+        const area = response.body.area;
+
+        expect(typeof area).toBe("object");
       });
   });
 
-  it("should return the correct restaurant count", () => {
+  it("200; correct area returned", () => {
     const areaId = 1;
+
     return request(app)
       .get(`/api/areas/${areaId}/restaurants`)
       .expect(200)
-      .then((result) => {
-        const obj = result.body.area;
-        expect(obj.restaurants).toHaveLength(2);
+      .then((response) => {
+        const area = response.body.area;
+
+        expect(area.area_name).toBe("Northern Quarter");
       });
   });
-  it("should return the area name", () => {
+
+  it("200; correct restaurants returned", () => {
     const areaId = 1;
+    
     return request(app)
       .get(`/api/areas/${areaId}/restaurants`)
       .expect(200)
-      .then((result) => {
-        const obj = result.body.area;
-        expect(obj.area_name).toBe("Northern Quarter");
-      });
-  });
-  it("should return an array of the area restaurants", () => {
-    const areaId = 1;
-    return request(app)
-      .get(`/api/areas/${areaId}/restaurants`)
-      .expect(200)
-      .then((result) => {
-        const restaurants = result.body.area.restaurants;
+      .then((response) => {
+        const restaurants = response.body.area.restaurants;
+
+        expect(response.body.area.total_restaurants).toBe(2);
+        expect(restaurants).toHaveLength(2);
         expect(restaurants[0]).toMatchObject({
           restaurant_name: "Pieminister",
           restaurant_id: 5,
           cuisine: "Pies And More Pies",
           website: "",
-          area_id: 1,
+          area_id: areaId,
         });
         expect(restaurants[1]).toMatchObject({
           restaurant_name: "Dehli 2 go",
           restaurant_id: 7,
           cuisine: "Late night food",
           website: "http://delhi2go-online.co.uk/",
-          area_id: 1,
+          area_id: areaId,
         });
       });
   });
 });
 
-describe("GET: 200 - /api/restaurants?search", () => {
-  it("should respond with only restaurants that match the search term", () => {
+describe("GET: /api/restaurants?search", () => {
+  it("200; only 1 match", () => {
     return request(app)
       .get("/api/restaurants?search=Pieminister")
       .expect(200)
@@ -247,7 +245,8 @@ describe("GET: 200 - /api/restaurants?search", () => {
         });
       });
   });
-  it("should return multiple restaurant that match search term", () => {
+
+  it("200; >1 matches", () => {
     return request(app)
       .get("/api/restaurants?search=Pi")
       .expect(200)
@@ -255,13 +254,6 @@ describe("GET: 200 - /api/restaurants?search", () => {
         const restaurants = response.body.restaurants;
 
         expect(restaurants).toHaveLength(2);
-        expect(restaurants[1]).toMatchObject({
-          restaurant_name: "Pieminister",
-          area_id: 1,
-          cuisine: "Pies And More Pies",
-          website: "",
-          average_rating: 1,
-        });
         expect(restaurants[0]).toMatchObject({
           restaurant_name: "Rudys Pizza",
           area_id: 2,
@@ -269,12 +261,19 @@ describe("GET: 200 - /api/restaurants?search", () => {
           website: "http://rudyspizza.co.uk/",
           average_rating: 5,
         });
+        expect(restaurants[1]).toMatchObject({
+          restaurant_name: "Pieminister",
+          area_id: 1,
+          cuisine: "Pies And More Pies",
+          website: "",
+          average_rating: 1,
+        });
       });
   });
 });
 
-describe("GET: 200 - /api/restaurants?sort_by", () => {
-  it("should respond with restaurants sorted by restaurant_name DESC since no sort_by is passed", () => {
+describe("GET: /api/restaurants?sort_by", () => {
+  it("200; restaurants sorted by restaurant_name DESC by default", () => {
     return request(app)
       .get("/api/restaurants")
       .expect(200)
@@ -287,7 +286,8 @@ describe("GET: 200 - /api/restaurants?sort_by", () => {
         expect(restaurants[5].restaurant_id).toBe(6);
       });
   });
-  it("should respond with restaurants sorted by rating DESC", () => {
+
+  it("200; restaurants sorted by the correct param, DESC", () => {
     return request(app)
       .get("/api/restaurants?sort_by=average_rating")
       .expect(200)
@@ -302,8 +302,8 @@ describe("GET: 200 - /api/restaurants?sort_by", () => {
   });
 });
 
-describe("GET: 200 - /api/restaurants?sort_by&search", () => {
-  it("should respond with restaurants filtered by search and sorted by rating DESC", () => {
+describe("GET: /api/restaurants?sort_by&search", () => {
+  it("200; multiple params correctly applied", () => {
     return request(app)
       .get("/api/restaurants?sort_by=average_rating&search=u")
       .expect(200)
