@@ -8,8 +8,8 @@ beforeAll(() => seed(seedData));
 
 afterAll(() => connection.end());
 
-describe("GET: 200 - /api", () => {
-  it("should return an object with a status code of 200", () => {
+describe("GET: /api", () => {
+  it("200; should return the valid message", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -19,30 +19,29 @@ describe("GET: 200 - /api", () => {
   });
 });
 
-describe("GET: 200 - /api/restaurants", () => {
-  it("should respond with an object that has a key restaurants", () => {
+describe("GET: /api/restaurants", () => {
+  it("200; correct highest level property and value is typeof Array", () => {
     return request(app)
       .get("/api/restaurants")
       .expect(200)
       .then((response) => {
-        expect(response.body).toHaveProperty("restaurants");
+        const body = response.body;
+
+        expect(body).toHaveProperty("restaurants");
+        expect(body.restaurants).toBeInstanceOf(Array);
       });
   });
-  it("should respond with an object that contains an array", () => {
+
+  it("200; restaurants have the correct shape", () => {
     return request(app)
       .get("/api/restaurants")
       .expect(200)
       .then((response) => {
-        expect(response.body.restaurants).toBeInstanceOf(Array);
-      });
-  });
-  it("should respond with an object that has an array of restaurant objects", () => {
-    return request(app)
-      .get("/api/restaurants")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.restaurants).toHaveLength(8);
-        response.body.restaurants.forEach((restaurant) => {
+        const restaurants = response.body.restaurants;
+        
+        expect(restaurants).toHaveLength(8);
+
+        restaurants.forEach((restaurant) => {
           expect(restaurant).toMatchObject({
             restaurant_name: expect.any(String),
             area_id: expect.any(Number),
@@ -53,7 +52,8 @@ describe("GET: 200 - /api/restaurants", () => {
         });
       });
   });
-  it("should respond with an object containing restaurants with correct average ratings", () => {
+
+  it("200; average rating of each restaurant is correct", () => {
     return request(app)
       .get("/api/restaurants")
       .expect(200)
