@@ -74,14 +74,17 @@ function updateRestaurant(request, response, next) {
 function getRestaurantsByAreaId(request, response, next) {
   const { areaId } = request.params;
   let returnObject;
+
   fetchAreaByAreaId(areaId)
     .then((area) => {
       returnObject = { area: { ...area } };
+      
       return fetchRestaurantsByAreaId(areaId);
     })
     .then((restaurants) => {
       returnObject.area.restaurants = restaurants;
       returnObject.area.total_restaurants = restaurants.length;
+
       response.status(200).send(returnObject);
     })
     .catch((err) => {
