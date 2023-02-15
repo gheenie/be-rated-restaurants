@@ -23,18 +23,18 @@ function removeRestaurant(restaurantId) {
   );
 }
 
-function patchRestaurant(restaurantId, area_id) {
-  return db
-    .query(
-      `UPDATE restaurants
-    SET area_id = $1
-    WHERE restaurant_id = $2
-    RETURNING *;`,
-      [area_id, restaurantId]
-    )
-    .then((result) => {
-      return result.rows[0];
-    });
+function patchRestaurant(restaurantId, updateObj) {
+  let queryString = "UPDATE restaurants SET";
+  for (const [key, value] of Object.entries(updateObj)) {
+    queryString += format(` %s = %L,`, key, value);
+  }
+  queryString =
+    queryString.substring(0, queryString.length - 1) +
+    format(" WHERE restaurant_id = %L RETURNING *;", restaurantId);
+  console.log(queryString);
+  return db.query(queryString).then((result) => {
+    return result.rows[0];
+  });
 }
 
 function fetchAreaByAreaId(areaId) {

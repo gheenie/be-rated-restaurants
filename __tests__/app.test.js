@@ -139,9 +139,13 @@ describe("PATCH: 200 - /api/restaurants/:restaurant_id", () => {
         expect(updatedRestaurant.area_id).toBe(2);
       });
   });
-  it("should ignore any other keys", () => {
-    const updateObject = { area_id: 2, restaurant_name: "Burger King" };
-    const restaurantId = 3;
+  it("should ignore invalid keys", () => {
+    const updateObject = {
+      area_id: 2,
+      menu: "Burger",
+      restaurant_name: "Burger King",
+    };
+    const restaurantId = 4;
 
     return request(app)
       .patch(`/api/restaurants/${restaurantId}`)
@@ -150,7 +154,8 @@ describe("PATCH: 200 - /api/restaurants/:restaurant_id", () => {
       .then((result) => {
         const updatedRestaurant = result.body.restaurant;
         expect(updatedRestaurant.area_id).toBe(2);
-        expect(updatedRestaurant.restaurant_name).toBe("Rudys Pizza");
+        expect(updatedRestaurant.restaurant_name).toBe("Burger King");
+        expect(updatedRestaurant).not.toHaveProperty("menu");
       });
   });
   it("should return 400 if no keys provided", () => {
@@ -236,6 +241,30 @@ describe("GET: 200 - /api/restaurants?search", () => {
           cuisine: "Pies And More Pies",
           website: "",
           average_rating: 1,
+        });
+      });
+  });
+  it("should return multiple restaurant that match search term", () => {
+    return request(app)
+      .get("/api/restaurants?search=Pi")
+      .expect(200)
+      .then((response) => {
+        const restaurants = response.body.restaurants;
+
+        expect(restaurants).toHaveLength(2);
+        expect(restaurants[1]).toMatchObject({
+          restaurant_name: "Pieminister",
+          area_id: 1,
+          cuisine: "Pies And More Pies",
+          website: "",
+          average_rating: 1,
+        });
+        expect(restaurants[0]).toMatchObject({
+          restaurant_name: "Rudys Pizza",
+          area_id: 2,
+          cuisine: "Neapolitan Pizzeria",
+          website: "http://rudyspizza.co.uk/",
+          average_rating: 5,
         });
       });
   });

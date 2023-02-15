@@ -7,45 +7,67 @@ const {
   fetchRestaurantsWithQueries,
 } = require("../models/restaurantModel");
 
-function getRestaurants(request, response) {
+function getRestaurants(request, response, next) {
   const { search } = request.query ?? "";
 
-  fetchRestaurantsWithQueries(search).then((restaurants) => {
-    response.status(200).send({ restaurants });
-  });
+  fetchRestaurantsWithQueries(search)
+    .then((restaurants) => {
+      response.status(200).send({ restaurants });
+    })
+    .catch((err) => {
+      next(err);
+    });
 }
 
-function createRestaurant(request, response) {
+function createRestaurant(request, response, next) {
   const newRestaurant = request.body;
 
-  addRestaurant(newRestaurant).then((restaurant) => {
-    response.status(201).send({ restaurant });
-  });
+  addRestaurant(newRestaurant)
+    .then((restaurant) => {
+      response.status(201).send({ restaurant });
+    })
+    .catch((err) => {
+      next(err);
+    });
 }
 
-function deleteRestaurant(request, response) {
+function deleteRestaurant(request, response, next) {
   const { restaurantId } = request.params;
 
-  removeRestaurant(restaurantId).then((result) => {
-    response.status(204).send();
-  });
+  removeRestaurant(restaurantId)
+    .then((result) => {
+      response.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
 }
 
-function updateRestaurant(request, response) {
+function updateRestaurant(request, response, next) {
   const { restaurantId } = request.params;
-  const { area_id } = request.body;
+  const keys = ["area_id", "restaurant_name", "cuisine", "website"];
+  const updateObj = {};
+  keys.forEach((key) => {
+    if (request.body.hasOwnProperty(key)) {
+      updateObj[key] = request.body[key];
+    }
+  });
 
-  if (area_id === undefined) {
+  if (Object.keys(updateObj).length === 0) {
     response.status(400).send();
     return;
   }
 
-  patchRestaurant(restaurantId, area_id).then((restaurant) => {
-    response.status(200).send({ restaurant });
-  });
+  patchRestaurant(restaurantId, updateObj)
+    .then((restaurant) => {
+      response.status(200).send({ restaurant });
+    })
+    .catch((err) => {
+      next(err);
+    });
 }
 
-function getRestaurantsByAreaId(request, response) {
+function getRestaurantsByAreaId(request, response, next) {
   const { areaId } = request.params;
   let returnObject;
   fetchAreaByAreaId(areaId)
@@ -57,6 +79,9 @@ function getRestaurantsByAreaId(request, response) {
       returnObject.area.restaurants = restaurants;
       returnObject.area.total_restaurants = restaurants.length;
       response.status(200).send(returnObject);
+    })
+    .catch((err) => {
+      next(err);
     });
 }
 

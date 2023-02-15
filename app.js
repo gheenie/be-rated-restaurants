@@ -6,6 +6,7 @@ const {
   updateRestaurant,
   getRestaurantsByAreaId,
 } = require("./controllers/restaurantController");
+const { handle500Error } = require("./controllers/errorController");
 
 const app = express();
 
@@ -24,5 +25,7 @@ app.delete("/api/restaurants/:restaurantId", deleteRestaurant);
 app.patch("/api/restaurants/:restaurantId", updateRestaurant);
 
 app.get("/api/areas/:areaId/restaurants", getRestaurantsByAreaId);
+
+app.use(handle500Error);
 
 module.exports = app;
