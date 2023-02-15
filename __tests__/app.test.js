@@ -68,8 +68,8 @@ describe("GET: /api/restaurants", () => {
   });
 });
 
-describe("POST: 201 - /api/restaurants", () => {
-  it("should respond with the newly created restaurant object", () => {
+describe("POST: /api/restaurants", () => {
+  it("201; response has the newly created restaurant", () => {
     const newRestaurant = {
       restaurant_name: "McDonald's",
       area_id: 2,
@@ -90,8 +90,8 @@ describe("POST: 201 - /api/restaurants", () => {
   });
 });
 
-describe("DELETE: 204 - /api/restaurants/:restaurant_id", () => {
-  it("should respond with 204", () => {
+describe("DELETE: /api/restaurants/:restaurant_id", () => {
+  it("204", () => {
     const restaurant_id = 1;
 
     return request(app)
@@ -99,34 +99,33 @@ describe("DELETE: 204 - /api/restaurants/:restaurant_id", () => {
       .expect(204);
   });
 
-  it("should remove the correct restaurant from the db", () => {
+  it("204; restaurant removed from the db is correct", () => {
     const restaurant_id = 2;
 
     return request(app)
       .delete("/api/restaurants/" + restaurant_id)
       .expect(204)
       .then(() => {
-        return connection.query(
-          "SELECT * FROM restaurants WHERE restaurant_id = 2;"
-        );
+        return connection.query("SELECT * FROM restaurants WHERE restaurant_id = 2;");
       })
-      .then((result) => {
-        expect(result.rows).toHaveLength(0);
+      .then((response) => {
+        expect(response.rows).toHaveLength(0);
       });
   });
 });
 
-describe("PATCH: 200 - /api/restaurants/:restaurant_id", () => {
-  it("should return a 200 code", () => {
-    const updateObject = { area_id: 2 };
-    const restaurantId = 4;
+describe("PATCH: /api/restaurants/:restaurant_id", () => {
+  it("200", () => {
+    const updateObject = { area_id: 3 };
+    const restaurantId = 3;
 
     return request(app)
       .patch(`/api/restaurants/${restaurantId}`)
       .send(updateObject)
       .expect(200);
   });
-  it("should update the key value", () => {
+
+  it("200; returned restaurant has the correctly updated key", () => {
     const updateObject = { area_id: 2 };
     const restaurantId = 3;
 
@@ -134,16 +133,18 @@ describe("PATCH: 200 - /api/restaurants/:restaurant_id", () => {
       .patch(`/api/restaurants/${restaurantId}`)
       .send(updateObject)
       .expect(200)
-      .then((result) => {
-        const updatedRestaurant = result.body.restaurant;
+      .then((response) => {
+        const updatedRestaurant = response.body.restaurant;
+
         expect(updatedRestaurant.area_id).toBe(2);
       });
   });
-  it("should ignore invalid keys", () => {
+
+  it("200; invalid key not added to returned restaurant", () => {
     const updateObject = {
       area_id: 2,
-      menu: "Burger",
       restaurant_name: "Burger King",
+      menu: "Burger",
     };
     const restaurantId = 4;
 
@@ -151,16 +152,18 @@ describe("PATCH: 200 - /api/restaurants/:restaurant_id", () => {
       .patch(`/api/restaurants/${restaurantId}`)
       .send(updateObject)
       .expect(200)
-      .then((result) => {
-        const updatedRestaurant = result.body.restaurant;
+      .then((response) => {
+        const updatedRestaurant = response.body.restaurant;
+
         expect(updatedRestaurant.area_id).toBe(2);
         expect(updatedRestaurant.restaurant_name).toBe("Burger King");
         expect(updatedRestaurant).not.toHaveProperty("menu");
       });
   });
-  it("should return 400 if no keys provided", () => {
+
+  it("400; no keys provided", () => {
     const updateObject = {};
-    const restaurantId = 3;
+    const restaurantId = 4;
 
     return request(app)
       .patch(`/api/restaurants/${restaurantId}`)
