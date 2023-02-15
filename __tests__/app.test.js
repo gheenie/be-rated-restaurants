@@ -269,3 +269,48 @@ describe("GET: 200 - /api/restaurants?search", () => {
       });
   });
 });
+
+describe("GET: 200 - /api/restaurants?sort_by", () => {
+  it("should respond with restaurants sorted by restaurant_name DESC since no sort_by is passed", () => {
+    return request(app)
+      .get("/api/restaurants")
+      .expect(200)
+      .then((response) => {
+        const restaurants = response.body.restaurants;
+
+        expect(restaurants[0].restaurant_id).toBe(8);
+        expect(restaurants[1].restaurant_id).toBe(3);
+        expect(restaurants[2].restaurant_id).toBe(5);
+        expect(restaurants[5].restaurant_id).toBe(6);
+      });
+  });
+  it("should respond with restaurants sorted by rating DESC", () => {
+    return request(app)
+      .get("/api/restaurants?sort_by=average_rating")
+      .expect(200)
+      .then((response) => {
+        const restaurants = response.body.restaurants;
+
+        expect(restaurants[0].restaurant_id).toBe(7);
+        expect(restaurants[1].restaurant_id).toBe(3);
+        expect(restaurants[2].restaurant_id).toBe(4);
+        expect(restaurants[5].restaurant_id).toBe(5);
+      });
+  });
+});
+
+describe("GET: 200 - /api/restaurants?sort_by&search", () => {
+  it("should respond with restaurants filtered by search and sorted by rating DESC", () => {
+    return request(app)
+      .get("/api/restaurants?sort_by=average_rating&search=u")
+      .expect(200)
+      .then((response) => {
+        const restaurants = response.body.restaurants;
+
+        expect(restaurants[0].restaurant_id).toBe(3);
+        expect(restaurants[1].restaurant_id).toBe(4);
+        expect(restaurants[2].restaurant_id).toBe(6);
+        expect(restaurants[3].restaurant_id).toBe(8);
+      });
+  });
+});
