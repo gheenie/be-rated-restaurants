@@ -18,7 +18,7 @@ Then to seed the database, there is a file in the `db` folder for the database. 
 
 ### Tables
 
-Both of the databases share the following table setup:
+The database has the following table setup:
 
 #### Areas Table
 
